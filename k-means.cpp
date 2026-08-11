@@ -37,9 +37,7 @@ void read_dataset(std::vector<Point>& p) {
 }
 
 double calculate_distance(Point p, Point c) {
-
 	return (p.x - c.x) * (p.x - c.x) + (p.y - c.y) * (p.y - c.y);
-
 }
 
 
@@ -53,7 +51,10 @@ int main()
 	Point c2{6.0, 6.0};
 
 
-
+	// calcular distancia entre cada centroide e cada ponto
+	// atribuir tal ponto para tal centroide
+	// tirar a nova media do centroide
+	// fazer isto ate nao modificar a media mais
 	
 
 	for(auto p : points) {
