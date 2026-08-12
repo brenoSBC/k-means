@@ -43,12 +43,53 @@ double calculate_distance(Point p, Point c) {
 
 int main()
 {
-	
+	std::vector<Point> centroides { {1.0, 1.0}, {6.0, 6.0} };
 	std::vector<Point> points;
+	
 	read_dataset(points);
 
-	Point c1{1.0, 1.0};
-	Point c2{6.0, 6.0};
+	double distance{__DBL_MAX__};
+	double curr_distance{0};
+
+	for(Point& p : points) {
+		p.min_distance = distance;
+
+		for(int i = 0; i < centroides.size(); i++) {
+
+			double curr_distance{calculate_distance(p, centroides[i])};
+			
+			if(curr_distance < distance) {
+				distance = curr_distance;
+				p.min_distance = curr_distance;
+				p.cluster = i; // centroid index
+			}
+		}
+	}
+	
+	int count{0};
+	int x_sum{0};
+	int y_sum{0};
+	
+
+	for(int i = 0; i < centroides.size(); i++) {
+		
+		for(Point p : points) {
+
+			if(p.cluster == i) {
+				x_sum += p.x;
+				y_sum += p.y;
+				count++;
+			}
+		}
+		double x_mean = x_sum / count;
+		double y_mean = y_sum / count;
+		
+		centroides[i] = {x_mean, y_mean};
+	}
+
+
+
+	
 
 
 	// calcular distancia entre cada centroide e cada ponto
@@ -56,10 +97,13 @@ int main()
 	// tirar a nova media do centroide
 	// fazer isto ate nao modificar a media mais
 	
+	// para tirar a nova media do centroide.
+	// pegar o X e todos os pontos e fazer media aritmetica
+	// pegar o Y de todos os pontos de fazer a media aritmetica
 
-	for(auto p : points) {
-		std::cout << p.x << " " << p.y <<  std::endl; 
-	}
+	// for(auto p : points) {
+	// 	std::cout << p.x << " " << p.y <<  std::endl; 
+	// }
 
 
 
@@ -125,4 +169,27 @@ void read_dataset() {
 	}
 }
 
+
+
+
+
+
+
+	double distance{0};
+
+	for(Point& p : points) {
+		p.min_distance = distance;
+
+		for(int i = 0; i < centroides.size(); i++) {
+
+			double curr_distance{calculate_distance(p, c)};
+			
+			if(curr_distance < distance) {
+				p.min_distance = curr_distance;
+				p.cluster = i; // centroid index
+			}
+		
+		}
+	}	
 */
+
