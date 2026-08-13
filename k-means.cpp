@@ -8,6 +8,9 @@
 #define DATASET_PATH "dataset.txt"
 #define K 2
 
+using std::cout;
+using std::endl;
+
 struct Point {
 	double x, y;
 	int cluster;
@@ -36,6 +39,18 @@ void read_dataset(std::vector<Point>& p) {
 		p.push_back(Point(x, y));
 	}
 	file.close();
+}
+
+void get_random_centroids(std::vector<Point>& p, std::vector<Point>& c) {
+
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_int_distribution<int> dist(0, p.size());  // random number from 0 until points vector size
+	            
+	for(Point& centroid : c) {
+		int random_index{dist(gen)}; // get a random index from points vector  
+		centroid = p[random_index];
+	}
 }
 
 double calculate_distance(Point p, Point c) {
@@ -82,7 +97,7 @@ void k_means(std::vector<Point> p, std::vector<Point> c) {
 			if(count > 0) {
 				double x_mean{x_sum / count};
 				double y_mean{y_sum / count};
-				c[k] = {x_mean, y_mean};				
+				c[k] = {x_mean, y_mean};					
 			}	
 		}
 	}
@@ -91,10 +106,12 @@ void k_means(std::vector<Point> p, std::vector<Point> c) {
 
 int main()
 {
-	std::vector<Point> centroids { {1.0, 1.0}, {6.0, 6.0} };
+	std::vector<Point> centroids(K);
 	std::vector<Point> points;
 	
 	read_dataset(points);
+
+	get_random_centroids(points, centroids);
 
 	k_means(points, centroids);
 
