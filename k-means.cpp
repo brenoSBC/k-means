@@ -3,6 +3,7 @@
 #include <vector>
 #include <sstream>
 #include <cmath>
+#include <random>
 
 #define DATASET_PATH "dataset.txt"
 #define K 2
@@ -41,60 +42,61 @@ double calculate_distance(Point p, Point c) {
 	return std::sqrt( (p.x - c.x) * (p.x - c.x) + (p.y - c.y) * (p.y - c.y) );
 }
 
-
-int main()
-{
-	std::vector<Point> centroides { {1.0, 1.0}, {6.0, 6.0} };
-	std::vector<Point> points;
-	
-	read_dataset(points);
+void k_means(std::vector<Point> p, std::vector<Point> c) {
 
 	int iterations{0};
 	bool changed{true};
-	
+
 	while(changed) {
+
 		changed = false;
 		iterations++;
 
-		// para cada ponto calcula a distancia do centroide mais proximo
-		for(int j = 0; j < points.size(); j++) {
-			points[j].min_distance = __DBL_MAX__;
-			int old_cluster{points[j].cluster};
+		for(int i = 0; i < p.size(); i++) {
+			p[i].min_distance = __DBL_MAX__;
+			int prev_cluster{p[i].cluster};
 
-			for(int k = 0; k < centroides.size(); k++) {
-				double curr_distance{calculate_distance(points[j], centroides[k])};
-				
-				if(curr_distance < points[j].min_distance) {
-					points[j].min_distance = curr_distance;
-					points[j].cluster = k; // centroid index
+			for(int j = 0; j < c.size(); j++) {
+				double curr_distance{calculate_distance(p[i], c[j])};
+
+				if(curr_distance < p[i].min_distance) {
+					p[i].min_distance = curr_distance;
+					p[i].cluster      = j; // centroid index
 				}
 			}
-			if(old_cluster != points[j].cluster) changed = true;
+			if(prev_cluster != p[i].cluster) changed = true;
 		}
 
-		// para cada centroide calcula sua media com os pontos que pertencem ao seu cluster
-		for(int m = 0; m < centroides.size(); m++) {
+		for(int k = 0; k < c.size(); k++) {
 			double x_sum{0};
 			double y_sum{0};
 			int    count{0};
 
-			for(int n = 0; n < points.size(); n++) {
-				if(points[n].cluster == m) {
-					x_sum += points[n].x;
-					y_sum += points[n].y;
+			for(int m = 0; m < p.size(); m++) {
+				if(p[m].cluster == k) {
+					x_sum += p[m].x;
+					y_sum += p[m].y;
 					count++;
 				}
 			}
-			
 			if(count > 0) {
 				double x_mean{x_sum / count};
 				double y_mean{y_sum / count};
-				centroides[m] = {x_mean, y_mean};
-
-				std::cout << "CENTROIDE: " << centroides[m].x << " " << centroides[m].y << std::endl;
-			}
+				c[k] = {x_mean, y_mean};				
+			}	
 		}
 	}
-	std::cout << "ITERACOES: " << iterations << std::endl;
+}
+
+
+int main()
+{
+	std::vector<Point> centroids { {1.0, 1.0}, {6.0, 6.0} };
+	std::vector<Point> points;
+	
+	read_dataset(points);
+
+	k_means(points, centroids);
+
 	return 0;
 }
