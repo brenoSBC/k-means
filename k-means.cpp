@@ -5,20 +5,20 @@
 #include <cmath>
 #include <random>
 
-#define DATASET_PATH "dataset.txt"
-#define K 2
+#define DATASET_PATH "datasets/iris.data"
+#define K 3
 
 using std::cout;
 using std::endl;
 
 struct Point {
-	double x, y;
+	double x, y, z;
 	int cluster;
 	double min_distance;
 
 	Point() = default;
 
-	Point(double x, double y) : x(x), y(y), cluster(-1), min_distance(__DBL_MAX__) {} 
+	Point(double x, double y, double z) : x(x), y(y), z(z), cluster(-1), min_distance(__DBL_MAX__) {} 
 };
 
 void read_dataset(std::vector<Point>& p) {
@@ -32,32 +32,57 @@ void read_dataset(std::vector<Point>& p) {
 	std::string line;
 	while(getline(file, line, '\n')) {
 
-		double x{}, y{};
+		double x{}, y{}, z{};
 		std::stringstream ss(line);
 		
-		ss >> x >> y;
-		p.push_back(Point(x, y));
+		ss >> x >> y >> z;
+		p.push_back(Point(x, y, z));
 	}
 	file.close();
+}
+
+void write_points(std::vector<Point> p) {
+	std::ofstream file("points.txt");
+	if(!file.is_open()) {
+		std::cerr << "Error opening file" << std::endl;
+		exit(EXIT_FAILURE);
+	}
+
+	for(int i = 0; i < p.size(); i++) {
+		file << p[i].x << " " << p[i].y << " " << p[i].z << " " << p[i].cluster << '\n';
+	}
+}
+
+void write_centroids(std::vector<Point> c) {
+
+	std::ofstream file("centroids.txt");
+	if(!file.is_open()) {
+		std::cerr << "Error opening file" << std::endl;
+		exit(EXIT_FAILURE);
+	}
+
+	for(int i = 0; i < c.size(); i++) {
+		file << c[i].x << " " << c[i].y << " " << c[i].z << '\n';
+	}
 }
 
 void get_random_centroids(std::vector<Point>& p, std::vector<Point>& c) {
 
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_int_distribution<int> dist(0, p.size());  // random number from 0 until points vector size
+	std::uniform_int_distribution<int> dist(0, p.size() - 1);  // random number from 0 until points vector size
 	            
 	for(Point& centroid : c) {
-		int random_index{dist(gen)}; // get a random index from points vector  
+		int random_index{dist(gen)}; // get a random index from all points vector  
 		centroid = p[random_index];
 	}
 }
 
 double calculate_distance(Point p, Point c) {
-	return std::sqrt( (p.x - c.x) * (p.x - c.x) + (p.y - c.y) * (p.y - c.y) );
+	return std::sqrt( (p.x - c.x) * (p.x - c.x) + (p.y - c.y) * (p.y - c.y) + (p.z - c.z) * (p.z - c.z) );
 }
 
-void k_means(std::vector<Point> p, std::vector<Point> c) {
+void k_means(std::vector<Point>& p, std::vector<Point>& c) {
 
 	int iterations{0};
 	bool changed{true};
@@ -85,24 +110,26 @@ void k_means(std::vector<Point> p, std::vector<Point> c) {
 		for(int k = 0; k < c.size(); k++) {
 			double x_sum{0};
 			double y_sum{0};
+			double z_sum{0};
 			int    count{0};
 
 			for(int m = 0; m < p.size(); m++) {
 				if(p[m].cluster == k) {
 					x_sum += p[m].x;
 					y_sum += p[m].y;
+					z_sum += p[m].z;
 					count++;
 				}
 			}
 			if(count > 0) {
 				double x_mean{x_sum / count};
 				double y_mean{y_sum / count};
-				c[k] = {x_mean, y_mean};					
+				double z_mean{z_sum / count};
+				c[k] = {x_mean, y_mean, z_mean};	
 			}	
 		}
 	}
 }
-
 
 int main()
 {
@@ -115,5 +142,9 @@ int main()
 
 	k_means(points, centroids);
 
+	write_points(points);
+	write_centroids(centroids);
+
 	return 0;
 }
+
