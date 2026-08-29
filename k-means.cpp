@@ -4,10 +4,10 @@
 #include <sstream>
 #include <cmath>
 #include <random>
+#include <chrono>
 
-#define DATASET_PATH "datasets/iris.data"
-#define K 3
-
+#define DATASET_PATH "generated_dataset.txt"
+ 
 using std::cout;
 using std::endl;
 
@@ -70,7 +70,7 @@ void get_random_centroids(std::vector<Point>& p, std::vector<Point>& c) {
 
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_int_distribution<int> dist(0, p.size() - 1);  // random number from 0 until points vector size
+	std::uniform_int_distribution<int> dist(0, p.size() - 1);  // random number from 0 until points vector size (-1 because the index)
 	            
 	for(Point& centroid : c) {
 		int random_index{dist(gen)}; // get a random index from all points vector  
@@ -131,19 +131,33 @@ void k_means(std::vector<Point>& p, std::vector<Point>& c) {
 	}
 }
 
-int main()
+int main(int argc, char** argv)
 {
+	if(argc != 2) {
+		std::cerr << "Usage: " << argv[0] << " <K>" << std::endl;
+		exit(1);
+	}
+	int K{std::stoi(argv[1])};
+
 	std::vector<Point> centroids(K);
 	std::vector<Point> points;
 	
+	auto start_load = std::chrono::high_resolution_clock::now();
 	read_dataset(points);
+	auto after_load = std::chrono::high_resolution_clock::now();
 
 	get_random_centroids(points, centroids);
 
+	auto start_kmeans = std::chrono::high_resolution_clock::now();
 	k_means(points, centroids);
+	auto after_kmeans = std::chrono::high_resolution_clock::now();
 
 	write_points(points);
 	write_centroids(centroids);
+
+	std::cout << "Load: " << std::chrono::duration<double>(after_load - start_load).count() << " s\n";
+
+	std::cout << "Kmeans: " << std::chrono::duration<double>(after_kmeans - start_kmeans).count() << " s\n";
 
 	return 0;
 }

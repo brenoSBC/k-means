@@ -15,11 +15,11 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    int LINES = std::stoi(argv[1]);
-    int LOWEST_NUM = std::stoi(argv[2]);
-    int BIGGEST_NUM = std::stoi(argv[3]);
+    int LINES      {std::stoi(argv[1])};
+    int LOWEST_NUM {std::stoi(argv[2])};
+    int BIGGEST_NUM{std::stoi(argv[3])};
 
-    std::ofstream file("dataset.txt");
+    std::ofstream file("generated_dataset.txt");
 
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -28,8 +28,9 @@ int main(int argc, char** argv) {
     for (int i = 0; i < LINES; i++) {
         double x{dist(gen)};
         double y{dist(gen)};
+        double z{dist(gen)};
 
-        file << x << " " << y << '\n';
+        file << x << " " << y << " " << z << '\n';
     }
 
     file.close();

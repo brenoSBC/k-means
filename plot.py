@@ -31,8 +31,8 @@ with open("centroids.txt", "r") as centroids:
         cy.append(float(values[1]))
         cz.append(float(values[2]))
 
-ax.scatter(x, y, z, c=clusters)
-ax.scatter(cx, cy, cz, marker="X", s=300)
+ax.scatter(x, y, z, s=100, c=clusters)
+ax.scatter(cx, cy, cz, marker="X", s=400, c='black')
 
 ax.set_xlabel("X")
 ax.set_ylabel("Y")
