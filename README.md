@@ -1,1 +1,3 @@
-# k-means
+# K-MEANS
+
+![gif](images/output.gif)
