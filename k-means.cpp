@@ -41,19 +41,19 @@ void read_dataset(std::vector<Point>& p) {
 	file.close();
 }
 
-void write_points(std::vector<Point> p) {
+void write_points(std::vector<Point>& p) {
 	std::ofstream file("points.txt");
 	if(!file.is_open()) {
 		std::cerr << "Error opening file" << std::endl;
 		exit(EXIT_FAILURE);
 	}
 
-	for(int i = 0; i < p.size(); i++) {
+	for(size_t i = 0; i < p.size(); i++) {
 		file << p[i].x << " " << p[i].y << " " << p[i].z << " " << p[i].cluster << '\n';
 	}
 }
 
-void write_centroids(std::vector<Point> c) {
+void write_centroids(std::vector<Point>& c) {
 
 	std::ofstream file("centroids.txt");
 	if(!file.is_open()) {
@@ -61,7 +61,7 @@ void write_centroids(std::vector<Point> c) {
 		exit(EXIT_FAILURE);
 	}
 
-	for(int i = 0; i < c.size(); i++) {
+	for(size_t i = 0; i < c.size(); i++) {
 		file << c[i].x << " " << c[i].y << " " << c[i].z << '\n';
 	}
 }
@@ -78,7 +78,7 @@ void get_random_centroids(std::vector<Point>& p, std::vector<Point>& c) {
 	}
 }
 
-double calculate_distance(Point p, Point c) {
+double calculate_distance(Point& p, Point& c) {
 	return std::sqrt( (p.x - c.x) * (p.x - c.x) + (p.y - c.y) * (p.y - c.y) + (p.z - c.z) * (p.z - c.z) );
 }
 
@@ -92,29 +92,29 @@ void k_means(std::vector<Point>& p, std::vector<Point>& c) {
 		changed = false;
 		iterations++;
 
-		for(int i = 0; i < p.size(); i++) {
+		for(size_t i = 0; i < p.size(); i++) {
 			p[i].min_distance = __DBL_MAX__;
 			int prev_cluster{p[i].cluster};
 
-			for(int j = 0; j < c.size(); j++) {
+			for(size_t j = 0; j < c.size(); j++) {
 				double curr_distance{calculate_distance(p[i], c[j])};
 
 				if(curr_distance < p[i].min_distance) {
 					p[i].min_distance = curr_distance;
-					p[i].cluster      = j; // centroid index
+					p[i].cluster      = static_cast<int>(j); // centroid index
 				}
 			}
 			if(prev_cluster != p[i].cluster) changed = true;
 		}
 
-		for(int k = 0; k < c.size(); k++) {
+		for(size_t k = 0; k < c.size(); k++) {
 			double x_sum{0};
 			double y_sum{0};
 			double z_sum{0};
 			int    count{0};
 
-			for(int m = 0; m < p.size(); m++) {
-				if(p[m].cluster == k) {
+			for(size_t m = 0; m < p.size(); m++) {
+				if(p[m].cluster == static_cast<int>(k)) {
 					x_sum += p[m].x;
 					y_sum += p[m].y;
 					z_sum += p[m].z;
