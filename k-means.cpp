@@ -6,7 +6,7 @@
 #include <random>
 #include <chrono>
 
-#define DATASET_PATH "generated_dataset.txt"
+#define DATASET_PATH "dataset.txt"
  
 using std::cout;
 using std::endl;

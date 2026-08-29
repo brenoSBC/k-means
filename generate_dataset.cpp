@@ -19,7 +19,7 @@ int main(int argc, char** argv) {
     int LOWEST_NUM {std::stoi(argv[2])};
     int BIGGEST_NUM{std::stoi(argv[3])};
 
-    std::ofstream file("generated_dataset.txt");
+    std::ofstream file("dataset.txt");
 
     std::random_device rd;
     std::mt19937 gen(rd());
